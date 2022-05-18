@@ -1,28 +1,27 @@
-use std::{fs::{File, self}, io::{Error, Write}};
+use std::{fs, io::Error, path::Path};
 
-const W: usize   = 20;
-const H: usize   = 20;
-const PATH: &str = "image.ppm";
+use image::{ImageBuffer, RgbImage, Rgb};
+
+const W: usize   = 30;
+const H: usize   = 30;
 
 fn main() -> Result<(), Error> {
     let mut image = [0; W * H];
-
-    if File::open(PATH).is_ok() {
-        fs::remove_file(PATH)?;
-    }
-    let mut file = File::create(PATH)?;
-
-    let header = format!("P4 {} {}", W, H);
-    file.write_all(header.as_bytes())?;
+    image[W-1] = 1;
     
-    gen(&mut image);
-
-    file.write_all(&image)?;
+    if Path::exists(Path::new("tmp")) {
+        fs::remove_dir("tmp")?;
+    }
+    fs::create_dir("tmp")?;
+ 
+    gen(&mut image)?;
 
     Ok(())
 }
 
-fn gen(image: &mut [u8; W * H]) {
+fn gen(image: &mut [u8; W * H]) -> Result<(), Error> {
+    let mut fi = 0;
+
     for i in 0..image.len()-W-1 {
         let p1 = char::from_digit(image[i] as u32, 10).unwrap();
         let p2 = char::from_digit(image[i+1] as u32, 10).unwrap();
@@ -46,6 +45,33 @@ fn gen(image: &mut [u8; W * H]) {
             "001" => 1,
             "000" => 0,
             _ => 0
+        };
+        if image[w] == 1 {
+            write_png(&format!("image-{}.png", fi), image)?;
+            fi += 1;
         }
     }
+
+    Ok(())
+}
+
+fn write_png(path: &str, data: &[u8]) -> Result<(), Error> {
+    let file_path = "tmp/".to_string() + path;
+    if Path::exists(Path::new(&file_path)) {
+        fs::remove_file(&file_path)?;
+    }
+    let mut image: RgbImage = ImageBuffer::new(W as u32, H as u32);
+
+    for (x, y, pixel) in image.enumerate_pixels_mut() {
+        let pos = x + y * W as u32;
+        *pixel = match data[pos as usize] {
+            1 => Rgb([255, 0, 0]),
+            0 => Rgb([0, 0, 0]),
+            _ => Rgb([0, 0, 0])
+        };
+    }
+
+    image.save(&file_path).unwrap();
+
+    Ok(())
 }
