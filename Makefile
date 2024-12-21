@@ -5,8 +5,8 @@ release:
 	cargo run --release
 
 video:
-	ffmpeg -r 10 -i tmp/image-%d.png output.mp4
+	ffmpeg -hide_banner -loglevel error -r 10 -i tmp/image-%d.png output.mp4
 
 clean:
 	rm -rf tmp
-	rm output.mp4
+	rm -f output.mp4

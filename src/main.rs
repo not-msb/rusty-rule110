@@ -2,8 +2,8 @@ use std::{fs, io::Error, path::Path};
 
 use image::{ImageBuffer, RgbImage, Rgb};
 
-const W: usize   = 1000;
-const H: usize   = 1000;
+const W: usize = 200;
+const H: usize = 200;
 
 fn main() -> Result<(), Error> {
     let mut image = [0; W * H];
@@ -49,6 +49,7 @@ fn gen(image: &mut [u8; W * H]) -> Result<(), Error> {
         if image[w] == 1 {
             write_png(&format!("image-{}.png", fi), image)?;
             fi += 1;
+            eprintln!("Made {fi} images");
         }
     }
 
