@@ -1,3 +1,9 @@
+debug:
+	cargo run
+
+release:
+	cargo run --release
+
 video:
 	ffmpeg -r 10 -i tmp/image-%d.png output.mp4
 

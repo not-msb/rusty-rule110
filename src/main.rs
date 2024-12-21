@@ -2,8 +2,8 @@ use std::{fs, io::Error, path::Path};
 
 use image::{ImageBuffer, RgbImage, Rgb};
 
-const W: usize   = 30;
-const H: usize   = 30;
+const W: usize   = 1000;
+const H: usize   = 1000;
 
 fn main() -> Result<(), Error> {
     let mut image = [0; W * H];
